@@ -1,13 +1,90 @@
-<!document html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<title> win10 </title>
-<body>
-<h1> LOGO CHANGER PATH </h1>
-  <p>search registry editor</p>
-  <p>Computer\HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation</p>
-  <h2> To change mac address</h2>
-  <p>Computer\HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Class\</p>
-  </body>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Text Encryption and Decryption</title>
 </head>
+<body>
+  <h1>Text Encryption and Decryption</h1>
+  
+  <label for="encryptionKey">Secret Key:</label>
+  <input type="password" id="encryptionKey">
+  
+  <label for="inputText">Enter Text:</label>
+  <textarea id="inputText" rows="4" cols="50"></textarea>
+  
+  <button id="encryptButton">Encrypt</button>
+  <button id="decryptButton">Decrypt</button>
+  
+  <h2>Results:</h2>
+  <div>
+    <label for="outputText">Output Text:</label>
+    <textarea id="outputText" rows="4" cols="50" readonly></textarea>
+  </div>
+  
+  <script>
+    const encryptionKeyInput = document.getElementById('encryptionKey');
+    const encryptButton = document.getElementById('encryptButton');
+    const decryptButton = document.getElementById('decryptButton');
+    const inputText = document.getElementById('inputText');
+    const outputText = document.getElementById('outputText');
+    const allowedCharacters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()';
+
+    encryptButton.addEventListener('click', () => {
+      const key = encryptionKeyInput.value;
+      const plaintext = inputText.value;
+      const encryptedText = encryptText(plaintext, key);
+      outputText.value = encryptedText;
+    });
+
+    decryptButton.addEventListener('click', () => {
+      const key = encryptionKeyInput.value;
+      const encryptedText = inputText.value;
+      const decryptedText = decryptText(encryptedText, key);
+      outputText.value = decryptedText;
+    });
+
+    function encryptText(text, key) {
+      let encryptedText = '';
+      
+      for (let i = 0; i < text.length; i++) {
+        const char = text.charAt(i);
+        const keyChar = key.charAt(i % key.length);
+        
+        if (allowedCharacters.includes(char)) {
+          const charIndex = allowedCharacters.indexOf(char);
+          const keyIndex = allowedCharacters.indexOf(keyChar);
+          const encryptedIndex = (charIndex + keyIndex) % allowedCharacters.length;
+          encryptedText += allowedCharacters.charAt(encryptedIndex);
+        } else {
+          encryptedText += char; // Preserve non-allowed characters as is
+        }
+      }
+      
+      const repeatFactor = Math.ceil(text.length / encryptedText.length);
+      return encryptedText.repeat(repeatFactor);
+    }
+
+    function decryptText(text, key) {
+      let decryptedText = '';
+      
+      for (let i = 0; i < text.length; i++) {
+        const char = text.charAt(i);
+        const keyChar = key.charAt(i % key.length);
+        
+        if (allowedCharacters.includes(char)) {
+          const charIndex = allowedCharacters.indexOf(char);
+          const keyIndex = allowedCharacters.indexOf(keyChar);
+          const decryptedIndex = (charIndex - keyIndex + allowedCharacters.length) % allowedCharacters.length;
+          decryptedText += allowedCharacters.charAt(decryptedIndex);
+        } else {
+          decryptedText += char; // Preserve non-allowed characters as is
+        }
+      }
+      
+      return decryptedText;
+    }
+  </script>
+</body>
 </html>
